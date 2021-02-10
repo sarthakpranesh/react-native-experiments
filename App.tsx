@@ -1,24 +1,19 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 
-// different screens
+// Screens
+// Moti experiments and examples
+import ViewAnimations from './src/Moti/ViewAnimations/ViewAnimations';
+
+// Reanimated experiments
 
 const Stack = createStackNavigator()
 
 const RootStack = () => {
   return (
     <Stack.Navigator headerMode="none">
-      <Stack.Screen name="home" component={() => {
-        return (
-          <SafeAreaView>
-            <View>
-              <Text>gjfbgvbfuhb</Text>
-            </View>
-          </SafeAreaView>
-        );
-      }} />
+      <Stack.Screen name="home" component={ViewAnimations} />
     </Stack.Navigator>
   )
 }
@@ -30,12 +25,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
