@@ -1,14 +1,33 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 
 // different screens
-import AnimatedCube from './src/AnimatedCube';
-import Trignometry from './src/Trignometry/index.tsx';
 
+const Stack = createStackNavigator()
+
+const RootStack = () => {
+  return (
+    <Stack.Navigator headerMode="none">
+      <Stack.Screen name="home" component={() => {
+        return (
+          <SafeAreaView>
+            <View>
+              <Text>gjfbgvbfuhb</Text>
+            </View>
+          </SafeAreaView>
+        );
+      }} />
+    </Stack.Navigator>
+  )
+}
 
 export default function App() {
   return (
-    <Trignometry />
+    <NavigationContainer>
+      <RootStack/>
+    </NavigationContainer>
   );
 }
 
