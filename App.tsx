@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 // Screens
 // Moti experiments and examples
 import ViewAnimations from './src/Moti/ViewAnimations/ViewAnimations';
+import StarBackground from './src/StarBackground';
 
 // Reanimated experiments
 
@@ -12,8 +13,9 @@ const Stack = createStackNavigator()
 
 const RootStack = () => {
   return (
-    <Stack.Navigator headerMode="none">
+    <Stack.Navigator headerMode="none" initialRouteName='star'>
       <Stack.Screen name="home" component={ViewAnimations} />
+      <Stack.Screen name="star" component={StarBackground} />
     </Stack.Navigator>
   )
 }
