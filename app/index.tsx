@@ -15,6 +15,11 @@ export default function Page () {
                     <Text>Car Animation</Text>
                 </Pressable>
             </Link>
+            <Link href='/skia_test' asChild>
+                <Pressable>
+                    <Text>Skia test</Text>
+                </Pressable>
+            </Link>
         </View>
     )
 }

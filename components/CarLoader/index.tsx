@@ -103,7 +103,12 @@ const CarLoader = () => {
             [0, 4]
           )
         }
-      ]
+      ],
+      borderWidth: interpolate(
+        rippleAnimator.value,
+        [0, 0.6, 1],
+        [1, 0.8, 0]
+      )
     })
   )
   const carRipple2 = useAnimatedStyle(
@@ -121,7 +126,12 @@ const CarLoader = () => {
             [0, 4]
           )
         }
-      ]
+      ],
+      borderWidth: interpolate(
+        rippleAnimator2.value,
+        [0, 0.6, 1],
+        [1, 0.8, 0]
+      )
     })
   )
   const carRipple3 = useAnimatedStyle(
@@ -139,7 +149,12 @@ const CarLoader = () => {
             [0, 4]
           )
         }
-      ]
+      ],
+      borderWidth: interpolate(
+        rippleAnimator3.value,
+        [0, 0.6, 1],
+        [1, 0.8, 0]
+      )
     })
   )
 
