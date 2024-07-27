@@ -20,6 +20,11 @@ export default function Page () {
                     <Text>Skia test</Text>
                 </Pressable>
             </Link>
+            <Link href='/random' asChild>
+                <Pressable>
+                    <Text>Random</Text>
+                </Pressable>
+            </Link>
         </View>
     )
 }
