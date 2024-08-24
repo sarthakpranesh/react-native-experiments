@@ -25,6 +25,16 @@ export default function Page () {
                     <Text>Random</Text>
                 </Pressable>
             </Link>
+            <Link href='/rnrc' asChild>
+                <Pressable>
+                    <Text>RNRC</Text>
+                </Pressable>
+            </Link>
+            <Link href='/carousel' asChild>
+                <Pressable>
+                    <Text>carousel</Text>
+                </Pressable>
+            </Link>
         </View>
     )
 }
