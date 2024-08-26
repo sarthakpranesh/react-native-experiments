@@ -2,11 +2,13 @@ import React from 'react'
 import { Dimensions, Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native'
 import Animated, { cancelAnimation, runOnUI, scrollTo, useAnimatedRef, useDerivedValue, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
 
-const data = new Array(10).fill(0).map((_, i) => ({key: `${i}`}))
+const colorToken = () => Math.floor(Math.random() * 255)
+const data = new Array(10).fill(0).map((_, i) => ({ key: `${i}`, color: `rgba(${colorToken()}, ${colorToken()}, ${colorToken()}, 1)`} ))
 const width = Dimensions.get('window').width
 
 const CarouselItemRenderer = React.memo(({size, data, renderItem}) => {
-    return data.map((i, index) => (
+    const actData = React.useMemo(() => [...data, data[0]], [data]);
+    return actData.map((i, index) => (
         <View key={i.key} style={size}>
             {renderItem({item: i, index})}
         </View>
@@ -40,10 +42,9 @@ const Carousel = React.memo<typeof Animated.FlatList & CarouselProps>(({width, h
                 }
 
                 let lastScrollIndex = currentScrollIndex.value + 1;
-                if (lastScrollIndex >= carouselDataLength) {
+                if (lastScrollIndex > carouselDataLength) {
                     lastScrollIndex = 0
                 }
-
                 currentScrollIndex.value = lastScrollIndex
             }),
             -1,
@@ -77,6 +78,10 @@ const Carousel = React.memo<typeof Animated.FlatList & CarouselProps>(({width, h
 
     useDerivedValue(() => {
         scrollTo(animatedScrollRef, currentScrollIndex.value * carouselItemSize.width, 0, true)
+        if (currentScrollIndex.value === carouselDataLength) {
+            scrollTo(animatedScrollRef, 0, 0, true)
+            currentScrollIndex.value = 0;
+        }
     }, [carouselItemSize, animatedScrollRef, currentScrollIndex])
 
     React.useEffect(() => {
@@ -87,6 +92,7 @@ const Carousel = React.memo<typeof Animated.FlatList & CarouselProps>(({width, h
 
     return (
         <Animated.ScrollView
+            showsHorizontalScrollIndicator={false}
             ref={animatedScrollRef}
             style={carouselItemSize}
             horizontal={!!horizontal}
@@ -111,11 +117,10 @@ export default function Page () {
                 height={200}
                 data={data}
                 scrollAnimationDuration={1000}
-                renderItem={({ index }) => (
-                    <View style={{backgroundColor: 'pink', flex: 1, justifyContent: 'center'}}>
-                        <Image width={width} height={200} source={{uri: `https://picsum.photos/id/${index}/400/200`}} resizeMode="cover" />
+                renderItem={({ item, index }) => (
+                    <View style={{backgroundColor: item.color, flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                            {index}
+                            {item.key}
                         </Text>
                     </View>
                 )}
@@ -129,11 +134,10 @@ export default function Page () {
                 height={200}
                 data={data}
                 scrollAnimationDuration={1000}
-                renderItem={({ index }) => (
-                    <View style={{backgroundColor: 'pink', flex: 1, justifyContent: 'center'}}>
-                        <Image width={width} height={200} source={{uri: `https://picsum.photos/id/${index}/400/200`}} resizeMode="cover" />
+                renderItem={({ item, index }) => (
+                    <View style={{backgroundColor: item.color, flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                            {index}
+                            {item.key}
                         </Text>
                     </View>
                 )}
@@ -147,11 +151,10 @@ export default function Page () {
                 height={200}
                 data={data}
                 scrollAnimationDuration={1000}
-                renderItem={({ index }) => (
-                    <View style={{backgroundColor: 'pink', flex: 1, justifyContent: 'center'}}>
-                        <Image width={width} height={200} source={{uri: `https://picsum.photos/id/${index}/400/200`}} resizeMode="cover" />
+                renderItem={({ item, index }) => (
+                    <View style={{backgroundColor: item.color, flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                            {index}
+                            {item.key}
                         </Text>
                     </View>
                 )}
@@ -165,29 +168,10 @@ export default function Page () {
                 height={200}
                 data={data}
                 scrollAnimationDuration={1000}
-                renderItem={({ index }) => (
-                    <View style={{backgroundColor: 'pink', flex: 1, justifyContent: 'center'}}>
-                        <Image width={width} height={200} source={{uri: `https://picsum.photos/id/${index}/400/200`}} resizeMode="cover" />
+                renderItem={({ item, index }) => (
+                    <View style={{backgroundColor: item.color, flex: 1, justifyContent: 'center'}}>
                         <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                            {index}
-                        </Text>
-                    </View>
-                )}
-            />
-            <Carousel
-                loop
-                autoPlay={true}
-                autoPlayInterval={3000}
-                horizontal
-                width={width}
-                height={200}
-                data={data}
-                scrollAnimationDuration={1000}
-                renderItem={({ index }) => (
-                    <View style={{backgroundColor: 'pink', flex: 1, justifyContent: 'center'}}>
-                        <Image width={width} height={200} source={{uri: `https://picsum.photos/id/${index}/400/200`}} resizeMode="cover" />
-                        <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                            {index}
+                            {item.key}
                         </Text>
                     </View>
                 )}
