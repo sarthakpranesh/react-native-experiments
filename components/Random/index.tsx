@@ -6,7 +6,7 @@ const Random = () => {
     return (
         <View style={StyleSheet.absoluteFill}>
             <View style={st.p12}>
-                <AnimatedRacingBorderView borderWidth={4} duration={4000} borderColorBackground='red' borderColorForeground='yellow' borderAnimationWidth={50} loop={3} way='clockwise'>
+                <AnimatedRacingBorderView borderWidth={4} duration={2000} borderColorBackground='red' borderColorForeground='yellow' borderAnimationWidth={50} loop={3} way='clockwise'>
                     <View style={st.greenBox} />
                 </AnimatedRacingBorderView>
             </View>
@@ -20,7 +20,7 @@ const st  = StyleSheet.create({
     },
     greenBox: {
         width: 300,
-        height: 66,
+        height: 300,
         backgroundColor: 'green'
     }
 })

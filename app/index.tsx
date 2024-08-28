@@ -35,6 +35,11 @@ export default function Page () {
                     <Text>carousel</Text>
                 </Pressable>
             </Link>
+            <Link href='/infiniteCarousel' asChild>
+                <Pressable>
+                    <Text>infinite carousel</Text>
+                </Pressable>
+            </Link>
         </View>
     )
 }
