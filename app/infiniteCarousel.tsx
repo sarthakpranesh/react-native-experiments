@@ -113,6 +113,7 @@ const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, au
     }, [animatedIndex, translationX])
 
     const pan = Gesture.Pan()
+        .activeOffsetX([-10, 10])
         .onStart(() => {
             cancelAnimation(autoPlayAnimationControllerValue)
             prevTranslationX.value = translationX.value;
@@ -212,6 +213,37 @@ export default function Page () {
                         </View>
                     )}
                 />
+                <InfiniteHorizontalList
+                    width={width * 0.8}
+                    height={200}
+                    data={data}
+                    renderForwardNumber={3}
+                    autoScroll
+                    autoScrollDuration={5000}
+                    renderItem={({ item, index }) => (
+                        <View style={{backgroundColor: item?.color, flex: 1, justifyContent: 'center'}}>
+                            <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
+                                {item?.key}
+                            </Text>
+                        </View>
+                    )}
+                />
+                <InfiniteHorizontalList
+                    width={width * 0.8}
+                    height={200}
+                    data={data}
+                    renderForwardNumber={3}
+                    autoScroll
+                    autoScrollDuration={5000}
+                    renderItem={({ item, index }) => (
+                        <View style={{backgroundColor: item?.color, flex: 1, justifyContent: 'center'}}>
+                            <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
+                                {item?.key}
+                            </Text>
+                        </View>
+                    )}
+                />
+
             </ScrollView>
         </GestureHandlerRootView>
     )
