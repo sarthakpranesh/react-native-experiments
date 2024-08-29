@@ -2,11 +2,12 @@ import { Extrapolate } from '@shopify/react-native-skia'
 import React from 'react'
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler'
-import Animated, { cancelAnimation, interpolate, runOnUI, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay, withDelay, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated'
+import Animated, { cancelAnimation, interpolate, runOnJS, runOnUI, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay, withDelay, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated'
 
 const colorToken = () => Math.floor(Math.random() * 255)
 const data = new Array(50).fill(0).map((_, i) => ({ key: `${i}`, color: `rgba(${colorToken()}, ${colorToken()}, ${colorToken()}, 1)`} ))
 const width = Dimensions.get('window').width
+const requestAnimationFrameWithContext = (callback: (d: any) => void, d: any) => requestAnimationFrame(() => callback(d))
 
 export type InfiniteListAnimatedRender = {
     item: any;
@@ -56,6 +57,7 @@ const InfiniteListAnimatedRender: React.FC<InfiniteListAnimatedRender> = ({item,
     )
 }
 export type InfiniteListProps = {
+    type?: "carousel" | "smooth";
     width: number;
     height: number;
     autoScroll?: boolean;
@@ -64,12 +66,14 @@ export type InfiniteListProps = {
     data: any[];
     renderItem: (p: any) => JSX.Element
     animatedIndex?: SharedValue<number>
+    onItemViewedOnIndex?: (item: any) => void
 }
-const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, autoScroll, autoScrollDuration = 3000, renderForwardNumber = 1, data: d, renderItem, animatedIndex}) => {
+const InfiniteHorizontalList = React.memo<InfiniteListProps>(({type = "carousel", width, height, autoScroll, autoScrollDuration = 3000, renderForwardNumber = 1, data: d, renderItem, animatedIndex, onItemViewedOnIndex}) => {
     const translationX = useSharedValue(0);
     const lastVelocity = useSharedValue(0);
     const prevTranslationX = useSharedValue(0);
     const autoPlayAnimationControllerValue = useSharedValue(0)
+    const itemViewedIndexControllerValue = useSharedValue(0)
 
     const data = React.useMemo(() => {
         if (d.length > 20) {
@@ -104,13 +108,27 @@ const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, au
     }, [width, height, data, renderItem, translationX, renderForwardNumber])
 
     useDerivedValue(() => {
+        let index = -((translationX.value / width) % data.length)
+        if (index < 0) {
+            index = data.length + index
+        }
         if (animatedIndex) {
-            animatedIndex.value = -((translationX.value / width) % data.length)
-            if (animatedIndex.value < 0) {
-                animatedIndex.value = data.length + animatedIndex.value
+            animatedIndex.value = index
+        }
+
+        if (onItemViewedOnIndex) {
+            const roundedIndex = Math.round(index)
+            if (
+                itemViewedIndexControllerValue.value !== roundedIndex &&
+                roundedIndex < data.length &&
+                roundedIndex >= 0
+            ) {
+                itemViewedIndexControllerValue.value = roundedIndex
+                runOnJS(requestAnimationFrameWithContext)(onItemViewedOnIndex, data[roundedIndex])
             }
         }
-    }, [animatedIndex, translationX])
+        
+    }, [animatedIndex, onItemViewedOnIndex, data])
 
     const pan = Gesture.Pan()
         .activeOffsetX([-10, 10])
@@ -124,17 +142,39 @@ const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, au
         })
         .onEnd(() => {
             if (lastVelocity.value) {
-                translationX.value = withDecay({
-                        deceleration: 0.98,
+                if (type === "smooth") {
+                    translationX.value = withDecay({
+                        deceleration: 0.998,
                         velocity: lastVelocity.value,
                     }, () => {
                         const snapToIndex = Math.round(translationX.value / width)
-                        translationX.value = withSpring(snapToIndex * width, {}, () => {
+                        translationX.value = withTiming(snapToIndex * width, {duration: 200}, () => {
                             if (autoScroll) {
                                 startAutoPlay()
                             }
                         })
                     })
+                    return
+                }
+                
+                if (type === "carousel") {
+                    let movingTo = 0;
+                    if (lastVelocity.value < -1000) {
+                        movingTo = -1
+                    }
+                    if (lastVelocity.value > 1000) {
+                        movingTo = 1
+                    }
+                    let snapToIndex = Math.round(translationX.value / width) + movingTo
+                    translationX.value = withTiming(snapToIndex * width, {
+                        duration: 200
+                    }, () => {
+                        if (autoScroll) {
+                            startAutoPlay()
+                        }
+                    })
+                    return
+                }
             }
         })
 
@@ -191,6 +231,7 @@ export default function Page () {
                         </View>
                     )}
                     animatedIndex={animatedIndex}
+                    onItemViewedOnIndex={(i) => console.log(i)}
                 />
                 <View style={st.dotMain}>
                     {data.map((d, index) => (
@@ -199,6 +240,7 @@ export default function Page () {
                 </View>
 
                 <InfiniteHorizontalList
+                    type="carousel"
                     width={width * 0.8}
                     height={200}
                     data={data}
@@ -212,8 +254,10 @@ export default function Page () {
                             </Text>
                         </View>
                     )}
+                    onItemViewedOnIndex={(i) => console.log(i)}
                 />
                 <InfiniteHorizontalList
+                    type="smooth"
                     width={width * 0.8}
                     height={200}
                     data={data}
@@ -227,21 +271,7 @@ export default function Page () {
                             </Text>
                         </View>
                     )}
-                />
-                <InfiniteHorizontalList
-                    width={width * 0.8}
-                    height={200}
-                    data={data}
-                    renderForwardNumber={3}
-                    autoScroll
-                    autoScrollDuration={5000}
-                    renderItem={({ item, index }) => (
-                        <View style={{backgroundColor: item?.color, flex: 1, justifyContent: 'center'}}>
-                            <Text style={{fontSize: 50, color: 'black', position: 'absolute', alignSelf: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-                                {item?.key}
-                            </Text>
-                        </View>
-                    )}
+                    onItemViewedOnIndex={(i) => console.log(i)}
                 />
 
             </ScrollView>
