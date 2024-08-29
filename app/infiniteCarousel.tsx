@@ -71,6 +71,9 @@ const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, da
     useDerivedValue(() => {
         if (animatedIndex) {
             animatedIndex.value = -((translationX.value / width) % data.length)
+            if (animatedIndex.value < 0) {
+                animatedIndex.value = data.length + animatedIndex.value
+            }
         }
     }, [animatedIndex, translationX])
 
@@ -103,7 +106,7 @@ const InfiniteHorizontalList = React.memo<InfiniteListProps>(({width, height, da
     )
 })
 
-const AnimatedDotIndicator = ({d, animatedIndex, index}) => {
+const AnimatedDotIndicator = ({d, animatedIndex, index, total}) => {
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
             animatedIndex.value,
@@ -115,7 +118,7 @@ const AnimatedDotIndicator = ({d, animatedIndex, index}) => {
             {
                 scale: interpolate(
                     animatedIndex.value,
-                    [index - 1, index, index + 1],
+                    [index - 1 < 0 ? total - 1 : index - 1, index, index + 1 > total ? 0 : index + 1],
                     [1, 2, 1],
                     Extrapolate.CLAMP
                 ),
@@ -148,7 +151,7 @@ export default function Page () {
                 />
                 <View style={st.dotMain}>
                     {data.map((d, index) => (
-                        <AnimatedDotIndicator key={d.key} d={d} animatedIndex={animatedIndex} index={index} />
+                        <AnimatedDotIndicator key={d.key} total={data.length} d={d} animatedIndex={animatedIndex} index={index} />
                     ))}
                 </View>
             </ScrollView>

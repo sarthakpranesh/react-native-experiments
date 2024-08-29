@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native';
-import Animated, { Easing, Extrapolate, interpolate, measure, useAnimatedRef, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, Extrapolate, interpolate, measure, useAnimatedRef, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
 export type AnimatedRacingBorderViewProps = {
     borderWidth: number;
@@ -13,20 +13,39 @@ export type AnimatedRacingBorderViewProps = {
     children: JSX.Element
 }
 const AnimatedRacingBorderView = React.memo<AnimatedRacingBorderViewProps>(({borderWidth, borderColorForeground, borderColorBackground, loop, way, children, borderAnimationWidth, duration}) => {
-    const animatedRef = useAnimatedRef()
     const animate = useSharedValue(0)
 
-    const [layout, setLayout] = React.useState({width: 0, height: 0})
+    const [layout, setLayout] = React.useState({width: 0, height: 0, aspectRatio: 0})
 
     React.useEffect(() => {
-        animate.value  = withRepeat(
-            withTiming(4, {
-                duration: duration ?? 2000,
-                easing: Easing.linear
-            }),
-            -1
-        )
-    }, [])
+        if (layout.width !== 0) {
+            const maxDuration = duration ?? 2000;
+            const eachPoleDuration = maxDuration / 5
+            const alternatePoleDurationModifier = (layout.aspectRatio - 1) * eachPoleDuration
+
+            animate.value = withRepeat(
+                withSequence(
+                    withTiming(1, {
+                        duration: eachPoleDuration,
+                        easing: Easing.linear
+                    }),
+                    withTiming(2, {
+                        duration: eachPoleDuration + alternatePoleDurationModifier,
+                        easing: Easing.linear
+                    }),
+                    withTiming(3, {
+                        duration: eachPoleDuration,
+                        easing: Easing.linear
+                    }),
+                    withTiming(4, {
+                        duration: eachPoleDuration + alternatePoleDurationModifier,
+                        easing: Easing.linear
+                    }),
+                ),
+                -1
+            )
+        }
+    }, [layout])
 
     const animatedStyle = useAnimatedStyle(() => {
         if (layout.width !== 0) {
@@ -43,7 +62,7 @@ const AnimatedRacingBorderView = React.memo<AnimatedRacingBorderViewProps>(({bor
             };
         }
         return {};
-    }, [borderAnimationWidth, layout]);
+    }, [layout]);
 
     const dst = React.useMemo(() => ({
         main: {
@@ -61,7 +80,7 @@ const AnimatedRacingBorderView = React.memo<AnimatedRacingBorderViewProps>(({bor
     }), [borderColorForeground, borderColorBackground, borderWidth, borderAnimationWidth])
 
     return (
-        <View style={[st.main, dst.main]} onLayout={(e) => setLayout({width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height})}>
+        <View style={[st.main, dst.main]} onLayout={(e) => setLayout({width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height, aspectRatio: e.nativeEvent.layout.height / e.nativeEvent.layout.width})}>
             <Animated.View style={[st.circle, dst.circle, animatedStyle]}  />
             <View style={st.children}>
                 {children}
