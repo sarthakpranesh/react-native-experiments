@@ -45,6 +45,11 @@ export default function Page() {
           <Text>Animated border using Path</Text>
         </Pressable>
       </Link>
+      <Link href="/star_animated_back" asChild>
+        <Pressable>
+          <Text>Star Background with Animated back</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
