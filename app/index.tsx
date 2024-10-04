@@ -50,6 +50,11 @@ export default function Page() {
           <Text>Star Background with Animated back</Text>
         </Pressable>
       </Link>
+      <Link href="/animatedBorderSvg" asChild>
+        <Pressable>
+          <Text>Hoppscotch Animated Border</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
