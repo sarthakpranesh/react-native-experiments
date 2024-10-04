@@ -8,18 +8,15 @@
       "developmentClient": true,
       "distribution": "internal"
     },
-    "preview": {
-      "distribution": "internal"
-    },
     "production": {
       "autoIncrement": true,
       "android": {
-        "image": "latest"
+        "image": "latest",
+        "buildType": "apk"
       },
       "ios": {
         "image": "latest"
-      },
-      "buildType": "apk"
+      }
     }
   },
   "submit": {
