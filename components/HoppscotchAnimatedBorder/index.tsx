@@ -11,19 +11,22 @@ import Animated, {
   Extrapolation,
   cancelAnimation,
 } from "react-native-reanimated";
+import gradient from './gradient.png'
 
-const EXTRA_IMAGE_WIDTH = 60
+const EXTRA_IMAGE_WIDTH = 100
 
 export type HoppscotchAnimatedBorderProps = {
     children: JSX.Element;
     borderWidth?: number;
     containerStyle?: ViewStyle;
+    gradientImage?: string;
 }
 
 const HoppscotchAnimatedBorder = React.memo<HoppscotchAnimatedBorderProps>(({
     children,
     borderWidth = 2,
     containerStyle = {},
+    gradientImage = gradient
   }) => {
     const progress = useSharedValue(0);
     const animatedLayout = useSharedValue({ w: 0, h: 0 });
@@ -64,7 +67,7 @@ const HoppscotchAnimatedBorder = React.memo<HoppscotchAnimatedBorderProps>(({
         onLayout={_onLayout}
         style={[st.main, containerStyle]}
       >
-        <Animated.Image source={require('./gradient.png')} style={[st.border, animatedImageStyles]} />
+        <Animated.Image source={gradientImage} style={[st.border, animatedImageStyles]} />
         <View style={[st.content, { padding: borderWidth }]}>{children}</View>
       </View>
     );
