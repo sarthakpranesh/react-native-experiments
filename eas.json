@@ -18,7 +18,8 @@
       },
       "ios": {
         "image": "latest"
-      }
+      },
+      "buildType": "apk"
     }
   },
   "submit": {
