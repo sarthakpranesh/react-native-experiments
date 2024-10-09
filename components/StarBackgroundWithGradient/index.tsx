@@ -1,6 +1,6 @@
-import { Blend, Canvas, Fill, FractalNoise, RadialGradient, Rect, Turbulence, vec } from '@shopify/react-native-skia';
-import React, { useDeferredValue } from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle, Dimensions } from 'react-native';
+import { Blend, Canvas, Fill, FractalNoise, interpolateColors, LinearGradient, RadialGradient, Rect, Turbulence, vec } from '@shopify/react-native-skia';
+import React, { useDeferredValue, useEffect } from 'react';
+import { StyleSheet, View, StyleProp, ViewStyle, Dimensions, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
@@ -160,7 +160,8 @@ const StarBackgroundWithGradient = React.memo(() => {
     <View style={[StyleSheet.absoluteFill, {backgroundColor: 'black'}]}>
       <Canvas style={{ flex: 1 }}>
         <Fill>
-          <Blend mode="difference">
+          <Blend mode="dstOver">
+            <AnimatedGradient />
             <RadialGradient
               r={width*0.7}
               c={vec(width/2, height/2 - 100)}
@@ -175,4 +176,55 @@ const StarBackgroundWithGradient = React.memo(() => {
   );
 });
 
+
+ 
+export const AnimatedGradient = () => {
+  const startColors = [
+    "rgba(1, 8, 27, 1)",
+    "rgba(1, 8, 27, 1)",
+    "rgba(0, 2, 67, 1)",
+    "rgba(0, 2, 67, 1)",
+    "rgba(1, 8, 27, 1)",
+    "rgba(1, 8, 27, 1)",
+  ];
+
+  const endColors = [
+    "rgba(1, 8, 27, 1)",
+    "rgba(0, 2, 67, 1)",
+    "rgba(0, 2, 67, 1)",
+    "rgba(1, 8, 27, 1)",
+    "rgba(1, 8, 27, 1)",
+    "rgba(0, 2, 67, 1)",
+    "rgba(0, 2, 67, 1)",
+  ];
+
+  const { width, height } = useWindowDimensions();
+  const colorsIndex = useSharedValue(0);
+  useEffect(() => {
+    colorsIndex.value = withRepeat(
+      withTiming(endColors.length - 1, {
+          duration: 16000,
+      }),
+      -1,
+      true
+    );
+  }, []);
+
+  const gradientColors = useDerivedValue(() => {
+    return [
+      interpolateColors(colorsIndex.value, [0, 1, 2, 3], startColors),
+      interpolateColors(colorsIndex.value, [0, 1, 2, 3], endColors),
+    ];
+  });
+
+  return (
+    <LinearGradient
+      start={vec(0, 0)}
+      end={vec(width, height)}
+      colors={gradientColors}
+    />
+  );
+};
+
 export default StarBackgroundWithGradient;
+
