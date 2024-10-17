@@ -55,6 +55,11 @@ export default function Page() {
           <Text>Hoppscotch Animated Border</Text>
         </Pressable>
       </Link>
+      <Link href="/rearrange" asChild>
+        <Pressable>
+          <Text>Rearrange</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
