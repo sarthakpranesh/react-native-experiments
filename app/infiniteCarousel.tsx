@@ -90,7 +90,7 @@ const InfiniteListAnimatedRender: React.FC<InfiniteListAnimatedRender> = ({
 
   return (
     <Animated.View style={[dst.main, animatedStyle]}>
-      {renderItem({ item, index })}
+      {renderItem({ item, index, currentIndex: animatedIndex })}
     </Animated.View>
   );
 };
@@ -106,7 +106,7 @@ export type InfiniteListProps = {
   animatedIndex?: SharedValue<number>;
   onItemViewedOnIndex?: (item: any) => void;
 };
-const InfiniteHorizontalList = React.memo<InfiniteListProps>(
+export const InfiniteHorizontalList = React.memo<InfiniteListProps>(
   ({
     type = "carousel",
     width,

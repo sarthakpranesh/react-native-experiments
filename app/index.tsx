@@ -60,6 +60,11 @@ export default function Page() {
           <Text>Rearrange</Text>
         </Pressable>
       </Link>
+      <Link href="/romato_parallax_banner" asChild>
+        <Pressable>
+          <Text>Zomato's Parallax Banner</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
